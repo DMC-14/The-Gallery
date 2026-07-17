@@ -433,27 +433,29 @@
                     const width = img.naturalWidth;
                     const height = img.naturalHeight;
                     
-                    if (width === 0 || height === 0) return; // Failsafe
-                    
-                    const ratio = width / height;
-                    
-                    // Clear the default placeholder class
-                    item.classList.remove('span-1x1', 'span-2x1', 'span-1x2', 'span-2x2');
-                    
-                    // Landscape (Catches 4:3, 3:2, 16:9)
-                    if (ratio >= 1.2) {
-                        item.classList.add('span-2x1');
-                    } 
-                    // Portrait (Catches 3:4, 2:3, 9:16)
-                    else if (ratio <= 0.85) {
-                        item.classList.add('span-1x2');
-                    } 
-                    // Square-ish
-                    else {
-                        item.classList.add('span-1x1');
+                    // If image loaded successfully, calculate ratio
+                    if (width > 0 && height > 0) {
+                        const ratio = width / height;
+                        
+                        // Clear the default placeholder class
+                        item.classList.remove('span-1x1', 'span-2x1', 'span-1x2', 'span-2x2');
+                        
+                        // Landscape (Catches 4:3, 3:2, 16:9)
+                        if (ratio >= 1.2) {
+                            item.classList.add('span-2x1');
+                        } 
+                        // Portrait (Catches 3:4, 2:3, 9:16)
+                        else if (ratio <= 0.85) {
+                            item.classList.add('span-1x2');
+                        } 
+                        // Square-ish
+                        else {
+                            item.classList.add('span-1x1');
+                        }
                     }
                     
-                    // Trigger the fade-in animation
+                    // CRITICAL FIX: Trigger the fade-in animation regardless of load success!
+                    // This prevents the page from being blank if GitHub is slow.
                     item.classList.add('layout-complete');
                 };
 
