@@ -44,6 +44,8 @@
             opacity: 0;
             transform: translateY(15px);
             transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+            will-change: transform, opacity;
+            contain: paint style;
         }
         
         /* New class applied by JS once aspect ratio is calculated */
@@ -422,53 +424,51 @@
             }
         });
 
-        // Auto-Layout Script for existing gallery images
+        // Auto-Layout Script optimized for performance
         document.addEventListener("DOMContentLoaded", () => {
             const gridItems = document.querySelectorAll('#gallery-container .grid-item');
             
             gridItems.forEach(item => {
                 const img = item.querySelector('img');
                 
+                // CRITICAL FIX: Offloads image decoding from the main browser thread to stop lagging
+                img.setAttribute('decoding', 'async');
+                
                 const applyLayout = () => {
-                    const width = img.naturalWidth;
-                    const height = img.naturalHeight;
-                    
-                    // If image loaded successfully, calculate ratio
-                    if (width > 0 && height > 0) {
-                        const ratio = width / height;
+                    // requestAnimationFrame batches visual updates so the browser doesn't freeze
+                    requestAnimationFrame(() => {
+                        const width = img.naturalWidth;
+                        const height = img.naturalHeight;
                         
-                        // Clear the default placeholder class
-                        item.classList.remove('span-1x1', 'span-2x1', 'span-1x2', 'span-2x2');
-                        
-                        // Landscape (Catches 4:3, 3:2, 16:9)
-                        if (ratio >= 1.2) {
-                            item.classList.add('span-2x1');
-                        } 
-                        // Portrait (Catches 3:4, 2:3, 9:16)
-                        else if (ratio <= 0.85) {
-                            item.classList.add('span-1x2');
-                        } 
-                        // Square-ish
-                        else {
-                            item.classList.add('span-1x1');
+                        if (width > 0 && height > 0) {
+                            const ratio = width / height;
+                            
+                            // Only change DOM classes if absolutely necessary to save memory
+                            let targetClass = 'span-1x1';
+                            if (ratio >= 1.2) {
+                                targetClass = 'span-2x1';
+                            } else if (ratio <= 0.85) {
+                                targetClass = 'span-1x2';
+                            }
+                            
+                            if (targetClass !== 'span-1x1') {
+                                item.classList.remove('span-1x1');
+                                item.classList.add(targetClass);
+                            }
                         }
-                    }
-                    
-                    // CRITICAL FIX: Trigger the fade-in animation regardless of load success!
-                    // This prevents the page from being blank if GitHub is slow.
-                    item.classList.add('layout-complete');
+                        
+                        item.classList.add('layout-complete');
+                    });
                 };
 
-                // If image is already loaded (from cache), apply immediately
                 if (img.complete) {
                     applyLayout();
                 } else {
-                    // Otherwise, wait for it to load
-                    img.addEventListener('load', applyLayout);
-                    // Failsafe if image link is broken
+                    // { once: true } ensures the listener cleans itself up instantly after firing
+                    img.addEventListener('load', applyLayout, { once: true });
                     img.addEventListener('error', () => {
-                        item.classList.add('span-1x1', 'layout-complete');
-                    });
+                        requestAnimationFrame(() => item.classList.add('layout-complete'));
+                    }, { once: true });
                 }
             });
         });
