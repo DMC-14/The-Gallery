@@ -41,10 +41,18 @@
             overflow: hidden;
             border-radius: 0.5rem;
             background-color: #f0f0f0; /* Fallback color */
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
         }
         
-        .grid-item:hover {
+        /* New class applied by JS once aspect ratio is calculated */
+        .grid-item.layout-complete {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .grid-item:hover.layout-complete {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
             z-index: 10;
@@ -83,6 +91,14 @@
             display: flex;
             opacity: 1;
         }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .animate-pop-in {
+            animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
 <body class="text-neutral-900 antialiased selection:bg-neutral-200">
@@ -114,78 +130,208 @@
             </p>
         </div>
         
-        <div class="mt-12 flex space-x-4 border-b border-neutral-200 pb-4">
-             <button class="text-sm font-medium text-black border-b-2 border-black pb-1">All Work</button>
-             <button class="text-sm font-medium text-neutral-400 hover:text-black transition pb-1">Landscapes</button>
-             <button class="text-sm font-medium text-neutral-400 hover:text-black transition pb-1">Portraits</button>
+        <div class="mt-12 flex flex-wrap gap-4 items-center justify-between border-b border-neutral-200 pb-4">
+            <div class="flex space-x-4">
+                 <button class="text-sm font-medium text-black border-b-2 border-black pb-1">All Work</button>
+                 <button class="text-sm font-medium text-neutral-400 hover:text-black transition pb-1">Landscapes</button>
+                 <button class="text-sm font-medium text-neutral-400 hover:text-black transition pb-1">Portraits</button>
+            </div>
+            
+            <!-- Hidden File Input (Allows multiple files) -->
+            <input type="file" id="photo-upload" accept="image/*" class="hidden" multiple>
+            
+            <!-- Add Photo Button -->
+            <button onclick="document.getElementById('photo-upload').click()" class="flex items-center space-x-2 text-sm font-medium text-white bg-black px-5 py-2.5 rounded-full hover:bg-neutral-800 transition-all shadow-md hover:shadow-lg active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                <span>Add Photo (Test Layout)</span>
+            </button>
         </div>
     </header>
 
     <main class="max-w-[96rem] mx-auto pb-24">
         <div class="metro-grid" id="gallery-container">
-            <!-- 
-                Replace the 'src' in the img tags with your actual image paths once on GitHub.
-                For now, they use placeholders that match the filenames from your screenshot.
-                The classes (span-2x2, span-1x2, etc.) determine the layout shape.
-            -->
-
-            <!-- Large Feature Image (e.g., 3:2 landscape) -->
+            
+            <!-- Feature Image Example - You can adjust classes later -->
             <div class="grid-item span-2x2 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/1200x800/d4d4d4/525252?text=DSC_7110.jpg" alt="Landscape Photo DSC_7110" loading="lazy">
+                <img src="./images/_DSC2292.jpg" alt="_DSC2292" loading="lazy">
                 <div class="absolute inset-0 bg-black/0 hover:bg-black/10 transition duration-300 flex items-end p-6">
-                    <span class="text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide">Landscape Study</span>
+                    <span class="text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide">Feature Image</span>
                 </div>
             </div>
 
-            <!-- Portrait Image (e.g., 3:4) -->
-            <div class="grid-item span-1x2 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x1200/e5e5e5/737373?text=1EA5156.jpg" alt="Portrait Photo 1EA5156" loading="lazy">
-            </div>
-
-            <!-- Standard Image (e.g., 4:3) -->
-            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x600/f5f5f5/a3a3a3?text=DSC_7722.jpg" alt="Photo DSC_7722" loading="lazy">
-            </div>
-
-            <!-- Wide Image (e.g., 16:9) -->
-            <div class="grid-item span-2x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/1600x900/d4d4d4/525252?text=DSC_7138.jpg" alt="Wide Photo DSC_7138" loading="lazy">
-            </div>
-
-            <!-- Standard Image -->
-            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x600/e5e5e5/737373?text=DSC_2230.jpg" alt="Photo DSC_2230" loading="lazy">
-            </div>
-
-            <!-- Portrait Image -->
-            <div class="grid-item span-1x2 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x1200/f5f5f5/a3a3a3?text=DSC_7208.jpg" alt="Photo DSC_7208" loading="lazy">
-            </div>
-            
-            <!-- Large Square Feature -->
-            <div class="grid-item span-2x2 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/1000x1000/d4d4d4/525252?text=DSC_6874(2).jpg" alt="Photo DSC_6874" loading="lazy">
-            </div>
-
-            <!-- Wide Image -->
-            <div class="grid-item span-2x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/1600x900/e5e5e5/737373?text=DSC_7232.jpg" alt="Photo DSC_7232" loading="lazy">
-            </div>
-
-            <!-- Standard Image -->
-            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x600/f5f5f5/a3a3a3?text=DSC_7211.jpg" alt="Photo DSC_7211" loading="lazy">
-            </div>
-
-             <!-- Standard Image -->
-             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)">
-                <img src="https://placehold.co/800x600/d4d4d4/525252?text=DSC_7088.jpg" alt="Photo DSC_7088" loading="lazy">
-            </div>
-            
-            <!-- Very Wide Feature Image -->
-            <div class="grid-item span-3x2 cursor-pointer" onclick="openLightbox(this)">
-                 <img src="https://placehold.co/2400x1600/e5e5e5/737373?text=DSC_7306.jpg" alt="Panoramic DSC_7306" loading="lazy">
-            </div>
+            <!-- Automatically generated list based on screenshot -->
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2317.jpg" alt="_DSC2317" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2324.jpg" alt="_DSC2324" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2605.jpg" alt="_DSC2605" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2612.jpg" alt="_DSC2612" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2901.jpg" alt="_DSC2901" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2920.jpg" alt="_DSC2920" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2926.jpg" alt="_DSC2926" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2947.jpg" alt="_DSC2947" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2952.jpg" alt="_DSC2952" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2953.jpg" alt="_DSC2953" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3034.jpg" alt="_DSC3034" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3116.jpg" alt="_DSC3116" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3117.jpg" alt="_DSC3117" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3128.jpg" alt="_DSC3128" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3166.jpg" alt="_DSC3166" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3178.jpg" alt="_DSC3178" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3279.jpg" alt="_DSC3279" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC3286.jpg" alt="_DSC3286" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC4846.jpg" alt="_DSC4846" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC4853.jpg" alt="_DSC4853" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5173.jpg" alt="_DSC5173" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5268.jpg" alt="_DSC5268" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5283 (1).jpg" alt="_DSC5283 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5284 (1).jpg" alt="_DSC5284 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5286 (1).jpg" alt="_DSC5286 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5294 (1).jpg" alt="_DSC5294 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5324.jpg" alt="_DSC5324" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5777.jpg" alt="_DSC5777" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5791.jpg" alt="_DSC5791" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC5808.jpg" alt="_DSC5808" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6832.jpg" alt="_DSC6832" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6855.jpg" alt="_DSC6855" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6863.jpg" alt="_DSC6863" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6874 (1).jpg" alt="_DSC6874 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6953.jpg" alt="_DSC6953" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6969.jpg" alt="_DSC6969" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6981.jpg" alt="_DSC6981" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC6994.jpg" alt="_DSC6994" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7088.jpg" alt="_DSC7088" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7109.jpg" alt="_DSC7109" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7110.jpg" alt="_DSC7110" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7112.jpg" alt="_DSC7112" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7117.jpg" alt="_DSC7117" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7126.jpg" alt="_DSC7126" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7138.jpg" alt="_DSC7138" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7146.jpg" alt="_DSC7146" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7178.jpg" alt="_DSC7178" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7211.jpg" alt="_DSC7211" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7213 (1).jpg" alt="_DSC7213 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7213.jpg" alt="_DSC7213" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7223.jpg" alt="_DSC7223" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7232.jpg" alt="_DSC7232" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7239.jpg" alt="_DSC7239" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7243.jpg" alt="_DSC7243" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7267.jpg" alt="_DSC7267" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7270.jpg" alt="_DSC7270" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7278 (1).jpg" alt="_DSC7278 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7278.jpg" alt="_DSC7278" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7293.jpg" alt="_DSC7293" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7306.jpg" alt="_DSC7306" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7320.jpg" alt="_DSC7320" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7720.jpg" alt="_DSC7720" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC7722.jpg" alt="_DSC7722" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9290.jpg" alt="_DSC9290" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9306.jpg" alt="_DSC9306" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9709.jpg" alt="_DSC9709" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9716.jpg" alt="_DSC9716" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9978.jpg" alt="_DSC9978" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9979.jpg" alt="_DSC9979" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9981.jpg" alt="_DSC9981" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9982.jpg" alt="_DSC9982" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC9985.jpg" alt="_DSC9985" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/1E3A5129.jpg" alt="1E3A5129" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/1E3A5134.jpg" alt="1E3A5134" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/1E3A5156.jpg" alt="1E3A5156" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260419-_DSC2305.jpg" alt="20260419-_DSC2305" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260430-_DSC2586.jpg" alt="20260430-_DSC2586" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260430-_DSC2598.jpg" alt="20260430-_DSC2598" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260430-_DSC2611.jpg" alt="20260430-_DSC2611" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260430-_DSC2615.jpg" alt="20260430-_DSC2615" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/20260430-_DSC2618.jpg" alt="20260430-_DSC2618" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/AGC_20250728_170239351.jpg" alt="AGC_20250728_170239351" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_0229.jpg" alt="DSC_0229" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_0230.jpg" alt="DSC_0230" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_0231.jpg" alt="DSC_0231" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_0508.jpg" alt="DSC_0508" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_0509.jpg" alt="DSC_0509" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1027.jpg" alt="DSC_1027" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1345.jpg" alt="DSC_1345" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1347.jpg" alt="DSC_1347" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1460.jpg" alt="DSC_1460" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1575.jpg" alt="DSC_1575" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1637.jpg" alt="DSC_1637" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1658.jpg" alt="DSC_1658" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1726 (1).jpg" alt="DSC_1726 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1778.jpg" alt="DSC_1778" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1788.jpg" alt="DSC_1788" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1879.jpg" alt="DSC_1879" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1880.jpg" alt="DSC_1880" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1881 (1).jpg" alt="DSC_1881 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1881.jpg" alt="DSC_1881" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1882 (1).jpg" alt="DSC_1882 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1882.jpg" alt="DSC_1882" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1883.jpg" alt="DSC_1883" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1901.jpg" alt="DSC_1901" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1911.jpg" alt="DSC_1911" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_1934.jpg" alt="DSC_1934" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_2226.jpg" alt="DSC_2226" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_2230.jpg" alt="DSC_2230" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_2235.jpg" alt="DSC_2235" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7102.jpg" alt="DSC_7102" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7675.jpg" alt="DSC_7675" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7698.jpg" alt="DSC_7698" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7756.jpg" alt="DSC_7756" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7763.jpg" alt="DSC_7763" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_7857.jpg" alt="DSC_7857" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8457.jpg" alt="DSC_8457" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8469.jpg" alt="DSC_8469" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8471.jpg" alt="DSC_8471" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8482 (1).jpg" alt="DSC_8482 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8492 (1).jpg" alt="DSC_8492 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8501.jpg" alt="DSC_8501" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8510.jpg" alt="DSC_8510" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8515.jpg" alt="DSC_8515" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8701 (1).jpg" alt="DSC_8701 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8705.jpg" alt="DSC_8705" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8710.jpg" alt="DSC_8710" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8717.jpg" alt="DSC_8717" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8728.jpg" alt="DSC_8728" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC_8729.jpg" alt="DSC_8729" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00003.jpg" alt="DSC00003" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00004.jpg" alt="DSC00004" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00006.jpg" alt="DSC00006" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00010.jpg" alt="DSC00010" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00012.jpg" alt="DSC00012" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00018.jpg" alt="DSC00018" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00024.jpg" alt="DSC00024" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00096.jpg" alt="DSC00096" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00332.jpg" alt="DSC00332" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00389.jpg" alt="DSC00389" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00807.jpg" alt="DSC00807" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC00815.jpg" alt="DSC00815" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/DSC07169.jpg" alt="DSC07169" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PW_ (2).jpg" alt="PW_ (2)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PW_ (3).jpg" alt="PW_ (3)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PW_ (4).jpg" alt="PW_ (4)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PW_ (5).jpg" alt="PW_ (5)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20250823_174126589.jpg" alt="PXL_20250823_174126589" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20250903_231757377.NIGHT (1).jpg" alt="PXL_20250903_231757377.NIGHT (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20251209_151221097.jpg" alt="PXL_20251209_151221097" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20251229_145359131.jpg" alt="PXL_20251229_145359131" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_161023442.jpg" alt="PXL_20260223_161023442" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_161151754.jpg" alt="PXL_20260223_161151754" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_161419570.jpg" alt="PXL_20260223_161419570" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_162310688.jpg" alt="PXL_20260223_162310688" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_162344404.jpg" alt="PXL_20260223_162344404" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_162409819 (1).jpg" alt="PXL_20260223_162409819 (1)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_162409819.jpg" alt="PXL_20260223_162409819" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260224_173221727.jpg" alt="PXL_20260224_173221727" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260226_101839312.jpg" alt="PXL_20260226_101839312" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260226_102003911.jpg" alt="PXL_20260226_102003911" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260226_102252455.jpg" alt="PXL_20260226_102252455" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260708_164419968.RAW-02.ORIGINAL.jpg" alt="PXL_20260708_164419968.RAW-02.ORIGINAL" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260708_164432804.RAW-02.ORIGINAL.jpg" alt="PXL_20260708_164432804.RAW-02.ORIGINAL" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (2).jpg" alt="wallpaper (2)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (3).jpg" alt="wallpaper (3)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (4).jpg" alt="wallpaper (4)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (5).jpg" alt="wallpaper (5)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (6).jpg" alt="wallpaper (6)" loading="lazy"></div>
+            <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/wallpaper (7).jpg" alt="wallpaper (7)" loading="lazy"></div>
 
         </div>
     </main>
@@ -274,6 +420,126 @@
             if (e.key === 'Escape' && lightbox.classList.contains('active')) {
                 closeLightbox();
             }
+        });
+
+        // Auto-Layout Script for existing gallery images
+        document.addEventListener("DOMContentLoaded", () => {
+            const gridItems = document.querySelectorAll('#gallery-container .grid-item');
+            
+            gridItems.forEach(item => {
+                const img = item.querySelector('img');
+                
+                const applyLayout = () => {
+                    const width = img.naturalWidth;
+                    const height = img.naturalHeight;
+                    
+                    if (width === 0 || height === 0) return; // Failsafe
+                    
+                    const ratio = width / height;
+                    
+                    // Clear the default placeholder class
+                    item.classList.remove('span-1x1', 'span-2x1', 'span-1x2', 'span-2x2');
+                    
+                    // Landscape (Catches 4:3, 3:2, 16:9)
+                    if (ratio >= 1.2) {
+                        item.classList.add('span-2x1');
+                    } 
+                    // Portrait (Catches 3:4, 2:3, 9:16)
+                    else if (ratio <= 0.85) {
+                        item.classList.add('span-1x2');
+                    } 
+                    // Square-ish
+                    else {
+                        item.classList.add('span-1x1');
+                    }
+                    
+                    // Trigger the fade-in animation
+                    item.classList.add('layout-complete');
+                };
+
+                // If image is already loaded (from cache), apply immediately
+                if (img.complete) {
+                    applyLayout();
+                } else {
+                    // Otherwise, wait for it to load
+                    img.addEventListener('load', applyLayout);
+                    // Failsafe if image link is broken
+                    img.addEventListener('error', () => {
+                        item.classList.add('span-1x1', 'layout-complete');
+                    });
+                }
+            });
+        });
+
+        const photoUpload = document.getElementById('photo-upload');
+        const galleryContainer = document.getElementById('gallery-container');
+
+        photoUpload.addEventListener('change', function(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            // Loop through all selected files
+            Array.from(files).forEach(file => {
+                // Create a temporary local URL for the image
+                const objectUrl = URL.createObjectURL(file);
+                
+                // Load the image purely to check its dimensions
+                const img = new Image();
+                img.onload = function() {
+                    const width = img.naturalWidth;
+                    const height = img.naturalHeight;
+                    const ratio = width / height;
+                    
+                    let gridClass = 'span-1x1'; // Default fallback
+
+                    // Auto-determine aspect ratio class
+                    // Landscape formats (Catches 4:3 ~1.33, 3:2 ~1.5, 16:9 ~1.77)
+                    if (ratio >= 1.2) {
+                        gridClass = 'span-2x1'; 
+                    // Portrait formats (Catches 3:4 ~0.75, 2:3 ~0.66, 9:16 ~0.56)
+                    } else if (ratio <= 0.85) {
+                        gridClass = 'span-1x2'; 
+                    // Square-ish formats (1:1)
+                    } else if (width >= 1000 && height >= 1000) {
+                        gridClass = 'span-2x2'; // Large high-res square
+                    } else {
+                        gridClass = 'span-1x1'; // Standard square
+                    }
+
+                    // Create the new gallery item wrapper
+                    const div = document.createElement('div');
+                    div.className = `grid-item ${gridClass} animate-pop-in cursor-pointer`;
+                    div.onclick = function() { openLightbox(this); };
+
+                    // Create the image element
+                    const imgEl = document.createElement('img');
+                    imgEl.src = objectUrl;
+                    imgEl.alt = file.name;
+                    imgEl.loading = 'lazy';
+
+                    // Add a subtle hover effect and caption for new items
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-black/0 hover:bg-black/20 transition duration-300 flex items-end p-6';
+                    const caption = document.createElement('span');
+                    caption.className = 'text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide drop-shadow-md';
+                    caption.textContent = 'New Upload';
+                    overlay.appendChild(caption);
+
+                    // Assemble and inject into the DOM
+                    div.appendChild(imgEl);
+                    div.appendChild(overlay);
+                    
+                    // Add layout-complete so it fades in instantly
+                    setTimeout(() => div.classList.add('layout-complete'), 50);
+                    
+                    galleryContainer.prepend(div); // Adds the new photo to the very top!
+                };
+                
+                img.src = objectUrl;
+            });
+            
+            // Clear the input so you can upload the same file again if needed
+            photoUpload.value = '';
         });
     </script>
 </body>
