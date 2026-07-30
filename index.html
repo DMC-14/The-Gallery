@@ -1,17 +1,48 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Gallery | Professional Photography</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@500;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
+                    },
+                    colors: {
+                        bgDark: '#07080B',
+                        cardDark: 'rgba(14, 16, 23, 0.75)',
+                        borderDark: 'rgba(255, 255, 255, 0.08)',
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)",
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #ECE7D9; /* Warm cream matching portfolio */
-            color: #1A1D1A;
+            background-color: #07080B;
+            color: #E5E7EB;
         }
+
+        /* Ambient Background Grid & Glows */
+        .bg-grid { background-size: 40px 40px; }
+        .glow-sphere { filter: blur(140px); pointer-events: none; }
+
+        /* Custom Dark Cyber Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #07080B; }
+        ::-webkit-scrollbar-thumb { background: #1f2330; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
 
         /* Metro Grid Layout */
         .metro-grid {
@@ -40,16 +71,16 @@
         .grid-item {
             position: relative;
             overflow: hidden;
-            border-radius: 0.5rem;
-            background-color: #f0f0f0; /* Fallback color */
+            border-radius: 0.75rem;
+            background-color: #0E1017; /* Dark cyber card fallback */
+            border: 1px solid rgba(255, 255, 255, 0.05);
             opacity: 0;
             transform: translateY(15px);
-            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.35s ease, border-color 0.35s ease;
             will-change: transform, opacity;
             contain: paint style;
         }
         
-        /* New class applied by JS once aspect ratio is calculated */
         .grid-item.layout-complete {
             opacity: 1;
             transform: translateY(0);
@@ -57,7 +88,8 @@
         
         .grid-item:hover.layout-complete {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-color: rgba(249, 115, 22, 0.45);
+            box-shadow: 0 16px 35px -10px rgba(249, 115, 22, 0.25);
             z-index: 10;
         }
 
@@ -65,23 +97,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.7s ease;
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .grid-item:hover img {
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
-        /* Defining standard aspect spans for a tight masonry/metro feel */
-        /* Landscape 16:9 or 3:2 wide */
+        /* Aspect Spans */
         .span-2x1 { grid-column: span 2; grid-row: span 1; }
-        /* Portrait 3:4 or 2:3 tall */
         .span-1x2 { grid-column: span 1; grid-row: span 2; }
-        /* Large square or feature image */
         .span-2x2 { grid-column: span 2; grid-row: span 2; }
-        /* Standard square-ish or small 4:3 */
         .span-1x1 { grid-column: span 1; grid-row: span 1; }
-        /* Extra wide feature */
         .span-3x2 { grid-column: span 3; grid-row: span 2; }
 
         /* Lightbox Styles */
@@ -108,44 +135,67 @@
         }
     </style>
 </head>
-<body class="text-neutral-900 antialiased selection:bg-[#E67E22] selection:text-white">
+<body class="bg-bgDark text-gray-200 antialiased selection:bg-orange-500 selection:text-white relative overflow-x-hidden">
 
-    <nav class="sticky top-0 bg-[#ECE7D9]/80 backdrop-blur-md z-40 border-b border-[#d8d2c1] transition-all duration-300" id="navbar">
-        <div class="max-w-[96rem] mx-auto px-6 py-5 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tighter text-[#1A1D1A] font-display">TheGallery.</h1>
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-neutral-600">
-                <a href="#" class="text-[#1A1D1A] transition">Portfolio</a>
-                <a href="#" onclick="openCollections(event)" class="hover:text-[#E67E22] transition">Collections</a>
-                <a href="#" class="hover:text-[#E67E22] transition">About</a>
-                <a href="#" class="hover:text-[#E67E22] transition">Contact</a>
+    <!-- Ambient Glowing Background Spheres -->
+    <div class="fixed top-[-10%] left-[-5%] w-[600px] h-[600px] rounded-full bg-orange-600/15 glow-sphere z-0"></div>
+    <div class="fixed top-[20%] right-[-10%] w-[650px] h-[650px] rounded-full bg-blue-600/15 glow-sphere z-0"></div>
+    <div class="fixed bottom-[-10%] left-[20%] w-[500px] h-[500px] rounded-full bg-amber-600/10 glow-sphere z-0"></div>
+
+    <!-- Background Technical Grid Layer -->
+    <div class="fixed inset-0 bg-grid-pattern bg-grid z-0 pointer-events-none"></div>
+
+    <!-- Glassmorphic Floating Navigation -->
+    <nav class="sticky top-4 z-40 max-w-7xl mx-auto px-4 sm:px-6 transition-all duration-300" id="navbar">
+        <div class="px-6 py-4 rounded-2xl bg-cardDark backdrop-blur-xl border border-borderDark shadow-2xl flex justify-between items-center">
+            <h1 class="text-2xl font-black tracking-tighter text-white font-display group cursor-pointer">
+                TheGallery<span class="text-orange-500">.</span>
+            </h1>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-gray-400">
+                <a href="#" class="text-white transition hover:text-orange-400">Portfolio</a>
+                <a href="#" onclick="openCollections(event)" class="hover:text-orange-400 transition">Collections</a>
+                <a href="#" class="hover:text-orange-400 transition">About</a>
+                <a href="#" class="hover:text-orange-400 transition">Contact</a>
             </div>
-            <button class="md:hidden text-[#1A1D1A] focus:outline-none">
+            <button onclick="openCollections(event)" class="text-xs font-bold uppercase tracking-wider text-orange-400 bg-orange-500/10 hover:bg-orange-500/20 px-4 py-2 rounded-xl border border-orange-500/30 transition-all">
+                Lookbook
+            </button>
         </div>
     </nav>
 
-    <header class="max-w-[96rem] mx-auto px-6 pt-24 pb-12 md:pt-32 md:pb-20">
-        <div class="max-w-3xl">
-            <h2 class="text-5xl md:text-7xl font-bold tracking-tighter text-[#1A1D1A] mb-6 leading-[1.05] font-display">
-                Crafting visual stories through <span class="text-[#E67E22]">moments</span>, <span class="text-[#E5B80B]">light</span>, & <span class="text-[#E74C3C]">perspective.</span>
+    <!-- Header Section -->
+    <header class="max-w-7xl mx-auto px-6 pt-16 pb-12 md:pt-24 md:pb-16 relative z-10">
+        <div class="max-w-4xl space-y-6">
+            <!-- Status Badge -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-orange-500/30 text-xs text-orange-300 backdrop-blur-md">
+                <span class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
+                <span class="uppercase tracking-widest font-semibold">Visual Archives &middot; Focused Lens</span>
+            </div>
+
+            <h2 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white leading-[1.05] font-display">
+                Crafting visual stories through 
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-amber-500">moments</span>, 
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 via-orange-400 to-blue-400">light</span>, &amp; 
+                <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-sky-400">perspective.</span>
             </h2>
-            <p class="text-lg text-neutral-600 font-medium leading-relaxed max-w-2xl">
+            <p class="text-lg text-gray-400 font-normal leading-relaxed max-w-2xl">
                 A curated collection of professional photography. From sweeping landscapes to intimate portraits, exploring the world through a focused lens.
             </p>
         </div>
         
-        <div class="mt-12 flex flex-wrap gap-4 items-center justify-between border-b border-[#d8d2c1] pb-4">
-            <div class="flex space-x-6" id="filter-buttons">
-                 <button onclick="filterGallery('all', this)" class="filter-btn text-sm font-bold text-[#1A1D1A] border-b-2 border-[#E74C3C] pb-1 transition-all duration-300">All Work</button>
-                 <button onclick="filterGallery('landscape', this)" class="filter-btn text-sm font-medium text-neutral-500 hover:text-[#1A1D1A] transition pb-1 transition-all duration-300">Landscapes</button>
-                 <button onclick="filterGallery('portrait', this)" class="filter-btn text-sm font-medium text-neutral-500 hover:text-[#1A1D1A] transition pb-1 transition-all duration-300">Portraits</button>
+        <div class="mt-12 flex flex-wrap gap-4 items-center justify-between border-b border-white/10 pb-6">
+            <div class="flex flex-wrap gap-2 sm:space-x-2" id="filter-buttons">
+                 <button onclick="filterGallery('all', this)" class="filter-btn active px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30 border border-orange-500/40 transition-all">All Work</button>
+                 <button onclick="filterGallery('landscape', this)" class="filter-btn px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white/[0.05] border border-white/10 text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all">Landscapes</button>
+                 <button onclick="filterGallery('portrait', this)" class="filter-btn px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white/[0.05] border border-white/10 text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all">Portraits</button>
             </div>
             
-            <!-- Hidden File Input (Allows multiple files) -->
+            <!-- Hidden File Input -->
             <input type="file" id="photo-upload" accept="image/*" class="hidden" multiple>
             
             <!-- Add Photo Button -->
-            <button onclick="document.getElementById('photo-upload').click()" class="flex items-center space-x-2 text-sm font-bold text-[#ECE7D9] bg-[#1A1D1A] px-6 py-3 rounded-full hover:bg-[#E67E22] transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 font-display tracking-wide">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+            <button onclick="document.getElementById('photo-upload').click()" class="flex items-center space-x-2 text-sm font-bold text-white bg-white/[0.05] hover:bg-orange-500/10 px-6 py-3 rounded-xl border border-orange-500/40 hover:border-orange-500 shadow-lg shadow-orange-500/10 transition-all duration-300 active:scale-95 font-display tracking-wide">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-orange-400">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                 </svg>
                 <span>Add Photo</span>
@@ -153,18 +203,19 @@
         </div>
     </header>
 
-    <main class="max-w-[96rem] mx-auto pb-24">
+    <!-- Main Gallery Section -->
+    <main class="max-w-[96rem] mx-auto pb-24 relative z-10">
         <div class="metro-grid" id="gallery-container">
             
-            <!-- Feature Image Example - You can adjust classes later -->
+            <!-- Feature Image -->
             <div class="grid-item span-2x2 cursor-pointer" onclick="openLightbox(this)">
                 <img src="./images/_DSC2292.jpg" alt="_DSC2292" loading="lazy">
-                <div class="absolute inset-0 bg-black/0 hover:bg-black/10 transition duration-300 flex items-end p-6">
-                    <span class="text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide">Feature Image</span>
+                <div class="absolute inset-0 bg-black/0 hover:bg-black/30 transition duration-300 flex items-end p-6">
+                    <span class="text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide drop-shadow-md">Feature Image</span>
                 </div>
             </div>
 
-            <!-- Automatically generated list based on screenshot -->
+            <!-- Image Archive -->
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2317.jpg" alt="_DSC2317" loading="lazy"></div>
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2324.jpg" alt="_DSC2324" loading="lazy"></div>
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/_DSC2605.jpg" alt="_DSC2605" loading="lazy"></div>
@@ -317,76 +368,81 @@
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20251209_151221097.jpg" alt="PXL_20251209_151221097" loading="lazy"></div>
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20251229_145359131.jpg" alt="PXL_20251229_145359131" loading="lazy"></div>
             <div class="grid-item span-1x1 cursor-pointer" onclick="openLightbox(this)"><img src="./images/PXL_20260223_161023442.jpg" alt="PXL_20260223_161023442" loading="lazy"></div>
-    <div id="lightbox" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-white/70 hover:text-white focus:outline-none transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+        </div>
+    </main>
+
+    <!-- Lightbox Modal (Dark Cyber Glass) -->
+    <div id="lightbox" class="fixed inset-0 bg-bgDark/95 backdrop-blur-xl z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-gray-400 hover:text-white focus:outline-none transition-all duration-300 bg-white/10 hover:bg-white/20 p-3 rounded-full border border-white/10">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
         <div class="max-w-7xl max-h-screen p-4 flex flex-col items-center justify-center">
-            <img id="lightbox-img" src="" alt="Enlarged view" class="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-sm">
-            <p id="lightbox-caption" class="text-white/60 mt-4 text-sm font-light tracking-wide"></p>
+            <img id="lightbox-img" src="" alt="Enlarged view" class="max-h-[85vh] max-w-full object-contain shadow-2xl rounded-xl border border-white/10">
+            <p id="lightbox-caption" class="text-gray-400 mt-4 text-xs font-semibold uppercase tracking-widest"></p>
         </div>
     </div>
 
-    <div id="collections-modal" class="fixed inset-0 bg-[#ECE7D9]/95 backdrop-blur-xl z-[60] overflow-y-auto hidden flex-col items-center justify-start py-12 px-4 transition-all duration-500 opacity-0">
-        <button onclick="closeCollections()" class="fixed top-6 right-6 text-[#1A1D1A] hover:text-[#E74C3C] focus:outline-none transition-all duration-300 z-[70] bg-white/60 hover:bg-white p-3 rounded-full shadow-sm backdrop-blur-md">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-7 h-7">
+    <!-- Collections Lookbook Modal -->
+    <div id="collections-modal" class="fixed inset-0 bg-bgDark/95 backdrop-blur-xl z-[60] overflow-y-auto hidden flex-col items-center justify-start py-12 px-4 transition-all duration-500 opacity-0">
+        <button onclick="closeCollections()" class="fixed top-6 right-6 text-gray-400 hover:text-white focus:outline-none transition-all duration-300 z-[70] bg-white/10 hover:bg-white/20 p-3 rounded-full border border-white/10 backdrop-blur-md">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
         
         <div class="w-full max-w-5xl flex flex-col items-center gap-16 mt-12 pb-32 mx-auto">
-            <div class="text-center mb-4 animate-pop-in">
-                <h2 class="text-4xl md:text-5xl font-bold font-display text-[#1A1D1A] mb-4">Photography Portfolio</h2>
-                <p class="text-neutral-500 font-medium tracking-wide uppercase text-sm">Digital Lookbook</p>
+            <div class="text-center mb-4 animate-pop-in space-y-2">
+                <span class="text-xs font-semibold uppercase tracking-widest text-orange-400 block">Editorial Archives</span>
+                <h2 class="text-4xl md:text-5xl font-extrabold font-display text-white tracking-tight">Photography Portfolio</h2>
+                <p class="text-gray-400 font-medium tracking-wide uppercase text-xs">Digital Lookbook</p>
             </div>
             
             <!-- Book Spreads -->
-            <img src="./images/1.png" alt="Portfolio Spread 1" class="w-full max-w-4xl h-auto shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-sm">
-            <img src="./images/2.png" alt="Portfolio Spread 2" class="w-full max-w-4xl h-auto shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-sm">
-            <img src="./images/3.png" alt="Portfolio Spread 3" class="w-full max-w-4xl h-auto shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-sm">
-            <img src="./images/4.png" alt="Portfolio Spread 4" class="w-full max-w-4xl h-auto shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-sm">
-            <img src="./images/5.png" alt="Portfolio Spread 5" class="w-full max-w-4xl h-auto shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-sm">
+            <img src="./images/1.png" alt="Portfolio Spread 1" class="w-full max-w-4xl h-auto shadow-2xl rounded-xl border border-white/10">
+            <img src="./images/2.png" alt="Portfolio Spread 2" class="w-full max-w-4xl h-auto shadow-2xl rounded-xl border border-white/10">
+            <img src="./images/3.png" alt="Portfolio Spread 3" class="w-full max-w-4xl h-auto shadow-2xl rounded-xl border border-white/10">
+            <img src="./images/4.png" alt="Portfolio Spread 4" class="w-full max-w-4xl h-auto shadow-2xl rounded-xl border border-white/10">
+            <img src="./images/5.png" alt="Portfolio Spread 5" class="w-full max-w-4xl h-auto shadow-2xl rounded-xl border border-white/10">
         </div>
     </div>
 
-    <footer class="border-t border-[#d8d2c1] bg-[#ECE7D9]">
-        <div class="max-w-[96rem] mx-auto px-6 py-12 md:py-16 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-6 md:mb-0 text-center md:text-left">
-                <h3 class="text-xl font-bold tracking-tighter text-[#1A1D1A] mb-2 font-display">TheGallery.</h3>
-                <p class="text-neutral-600 text-sm font-medium">Minimalist Photography Portfolio</p>
+    <!-- Footer -->
+    <footer class="border-t border-white/10 bg-bgDark relative z-10">
+        <div class="max-w-7xl mx-auto px-6 py-12 md:py-16 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <h3 class="text-xl font-extrabold tracking-tighter text-white mb-1 font-display">TheGallery<span class="text-orange-500">.</span></h3>
+                <p class="text-gray-500 text-xs font-medium">Visual Storytelling &amp; Photography Archive</p>
             </div>
-            <div class="flex space-x-6 text-neutral-500">
-                <a href="https://github.com/DMC-14/The-Gallery" target="_blank" class="hover:text-[#E67E22] transition">
+            <div class="flex space-x-6 text-gray-400">
+                <a href="https://github.com/DMC-14/The-Gallery" target="_blank" class="hover:text-orange-400 transition">
                     <span class="sr-only">GitHub</span>
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
                     </svg>
                 </a>
-                <a href="#" class="hover:text-black transition">
+                <a href="#" class="hover:text-orange-400 transition">
                     <span class="sr-only">Instagram</span>
-                    <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
                     </svg>
                 </a>
             </div>
-            <div class="mt-6 md:mt-0 text-sm text-neutral-400">
+            <div class="text-xs text-gray-500">
                 &copy; 2026 The Gallery. All rights reserved.
             </div>
         </div>
     </footer>
 
     <script>
-        // Navbar scroll effect
+        // Navbar scroll effect (Dark mode glass adjustment)
         const navbar = document.getElementById('navbar');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 10) {
-                navbar.classList.add('shadow-sm', 'bg-[#ECE7D9]/95');
-                navbar.classList.remove('bg-[#ECE7D9]/80');
+                navbar.classList.add('shadow-2xl');
             } else {
-                navbar.classList.remove('shadow-sm', 'bg-[#ECE7D9]/95');
-                navbar.classList.add('bg-[#ECE7D9]/80');
+                navbar.classList.remove('shadow-2xl');
             }
         });
 
@@ -397,28 +453,26 @@
 
         function openLightbox(element) {
             const img = element.querySelector('img');
-            lightboxImg.src = img.src.replace('placehold.co/', 'placehold.co/1920x1080/'); // Try to load a larger version for lightbox, assuming real URLs will have full res available
+            lightboxImg.src = img.src.replace('placehold.co/', 'placehold.co/1920x1080/');
             lightboxCaption.textContent = img.alt;
             lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeLightbox() {
             lightbox.classList.remove('active');
             setTimeout(() => {
-                lightboxImg.src = ''; // Clear source after transition
+                lightboxImg.src = '';
             }, 300);
-            document.body.style.overflow = ''; // Restore scrolling
+            document.body.style.overflow = '';
         }
 
-        // Close lightbox on click outside image
         lightbox.addEventListener('click', (e) => {
             if (e.target === lightbox) {
                 closeLightbox();
             }
         });
 
-        // Close lightbox on Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (!lightbox.classList.contains('hidden')) closeLightbox();
@@ -427,23 +481,22 @@
         });
 
         function openCollections(e) {
-            if(e) e.preventDefault(); // Prevents the link from jumping to the top of the page
+            if(e) e.preventDefault();
             const modal = document.getElementById('collections-modal');
             modal.classList.remove('hidden');
-            // Small delay to allow display block to apply before animating opacity
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
             }, 10);
-            document.body.style.overflow = 'hidden'; // Lock background scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         function closeCollections() {
             const modal = document.getElementById('collections-modal');
-            modal.classList.add('opacity-0'); // Fade out
+            modal.classList.add('opacity-0');
             setTimeout(() => {
-                modal.classList.add('hidden'); // Hide after fade completes
-            }, 500); // Matches the duration-500 class in CSS
-            document.body.style.overflow = ''; // Unlock background scrolling
+                modal.classList.add('hidden');
+            }, 500);
+            document.body.style.overflow = '';
         }
 
         // Auto-Layout Script optimized for performance
@@ -453,11 +506,9 @@
             gridItems.forEach(item => {
                 const img = item.querySelector('img');
                 
-                // CRITICAL FIX: Offloads image decoding from the main browser thread to stop lagging
                 img.setAttribute('decoding', 'async');
                 
                 const applyLayout = () => {
-                    // requestAnimationFrame batches visual updates so the browser doesn't freeze
                     requestAnimationFrame(() => {
                         const width = img.naturalWidth;
                         const height = img.naturalHeight;
@@ -465,7 +516,6 @@
                         if (width > 0 && height > 0) {
                             const ratio = width / height;
                             
-                            // Only change DOM classes if absolutely necessary to save memory
                             let targetClass = 'span-1x1';
                             let category = 'square';
                             
@@ -477,7 +527,6 @@
                                 category = 'portrait';
                             }
                             
-                            // Tag the item with its category for the filter buttons
                             item.setAttribute('data-category', category);
                             
                             if (targetClass !== 'span-1x1') {
@@ -493,7 +542,6 @@
                 if (img.complete) {
                     applyLayout();
                 } else {
-                    // { once: true } ensures the listener cleans itself up instantly after firing
                     img.addEventListener('load', applyLayout, { once: true });
                     img.addEventListener('error', () => {
                         requestAnimationFrame(() => item.classList.add('layout-complete'));
@@ -509,98 +557,82 @@
             const files = event.target.files;
             if (!files || files.length === 0) return;
 
-            // Loop through all selected files
             Array.from(files).forEach(file => {
-                // Create a temporary local URL for the image
                 const objectUrl = URL.createObjectURL(file);
                 
-                // Load the image purely to check its dimensions
                 const img = new Image();
                 img.onload = function() {
                     const width = img.naturalWidth;
                     const height = img.naturalHeight;
                     const ratio = width / height;
                     
-                    let gridClass = 'span-1x1'; // Default fallback
+                    let gridClass = 'span-1x1';
                     let category = 'square';
 
-                    // Auto-determine aspect ratio class
-                    // Landscape formats (Catches 4:3 ~1.33, 3:2 ~1.5, 16:9 ~1.77)
                     if (ratio >= 1.2) {
                         gridClass = 'span-2x1'; 
                         category = 'landscape';
-                    // Portrait formats (Catches 3:4 ~0.75, 2:3 ~0.66, 9:16 ~0.56)
                     } else if (ratio <= 0.85) {
                         gridClass = 'span-1x2'; 
                         category = 'portrait';
-                    // Square-ish formats (1:1)
                     } else if (width >= 1000 && height >= 1000) {
-                        gridClass = 'span-2x2'; // Large high-res square
+                        gridClass = 'span-2x2';
                     } else {
-                        gridClass = 'span-1x1'; // Standard square
+                        gridClass = 'span-1x1';
                     }
 
-                    // Create the new gallery item wrapper
                     const div = document.createElement('div');
                     div.className = `grid-item ${gridClass} animate-pop-in cursor-pointer`;
                     div.setAttribute('data-category', category);
                     div.onclick = function() { openLightbox(this); };
 
-                    // Create the image element
                     const imgEl = document.createElement('img');
                     imgEl.src = objectUrl;
                     imgEl.alt = file.name;
                     imgEl.loading = 'lazy';
 
-                    // Add a subtle hover effect and caption for new items
                     const overlay = document.createElement('div');
-                    overlay.className = 'absolute inset-0 bg-black/0 hover:bg-black/20 transition duration-300 flex items-end p-6';
+                    overlay.className = 'absolute inset-0 bg-black/0 hover:bg-black/40 transition duration-300 flex items-end p-6';
                     const caption = document.createElement('span');
                     caption.className = 'text-white opacity-0 hover:opacity-100 text-sm font-medium tracking-wide drop-shadow-md';
                     caption.textContent = 'New Upload';
                     overlay.appendChild(caption);
 
-                    // Assemble and inject into the DOM
                     div.appendChild(imgEl);
                     div.appendChild(overlay);
                     
-                    // Add layout-complete so it fades in instantly
                     setTimeout(() => div.classList.add('layout-complete'), 50);
                     
-                    galleryContainer.prepend(div); // Adds the new photo to the very top!
+                    galleryContainer.prepend(div);
                 };
                 
                 img.src = objectUrl;
             });
             
-            // Clear the input so you can upload the same file again if needed
             photoUpload.value = '';
         });
 
-        // Filter Functionality
+        // Filter Functionality (Updated with Neon Gradient Buttons for Dark Mode)
         function filterGallery(filterType, clickedBtn) {
-            // 1. Update active button styles
             const buttons = document.querySelectorAll('.filter-btn');
-            const inactiveClass = 'filter-btn text-sm font-medium text-neutral-500 hover:text-[#1A1D1A] transition pb-1 transition-all duration-300';
-            const activeClass = 'filter-btn text-sm font-bold text-[#1A1D1A] border-b-2 border-[#E74C3C] pb-1 transition-all duration-300';
+            const inactiveClass = 'filter-btn px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white/[0.05] border border-white/10 text-gray-400 hover:text-white hover:bg-white/[0.1] transition-all';
+            const activeClass = 'filter-btn active px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30 border border-orange-500/40 transition-all';
             
             buttons.forEach(btn => btn.className = inactiveClass);
             clickedBtn.className = activeClass;
 
-            // 2. Show/Hide gallery items
             const items = document.querySelectorAll('.grid-item');
             items.forEach(item => {
                 const category = item.getAttribute('data-category') || 'square';
                 
                 if (filterType === 'all' || category === filterType) {
-                    item.style.display = ''; // Restore grid layout display
+                    item.style.display = '';
                     
-                    // Add a tiny animation reset so they pop-in smoothly when filtering
                     item.classList.remove('layout-complete');
-                    void item.offsetWidth; // Trigger DOM reflow to reset animation
+                    void item.offsetWidth;
                     item.classList.add('layout-complete');
                 } else {
-                    item.style.display = 'none'; // Hide from grid
+                    item.style.display = 'none';
                 }
             });
         }
