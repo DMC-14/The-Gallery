@@ -1,6 +1,6 @@
 # 📷 Visual Portfolio & Gallery
 
-> **🌐 View Live Gallery:** [Click here to view the live site](https://your-live-link-here.com)
+> **🌐 View Live Gallery:** [Click here to view the live site]([https://your-live-link-here.com](https://dmc-14.github.io/The-Gallery/))
 
 A curated collection of visual stories, photojournalism, and coastal landscapes. This gallery documents the raw beauty of maritime environments, changing atmospheric light, and the daily rhythms of coastal communities.
 
