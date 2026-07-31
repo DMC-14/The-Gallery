@@ -38,6 +38,13 @@
             background-color: #07080B;
             color: #E5E7EB;
         }
+        /* Protect Images: Disable Long-Press Menu, Selection, and Dragging */
+        img {
+            -webkit-touch-callout: none; /* Stops iOS/Android long-press save menu */
+            -webkit-user-select: none;   /* Safari selection block */
+            user-select: none;           /* Standard selection block */
+            -webkit-user-drag: none;     /* Stops dragging photos to desktop/new tabs */
+        }
 
         /* Ambient Background Grid & Glows */
         .bg-grid { background-size: 40px 40px; }
@@ -837,6 +844,19 @@
                 if (!document.getElementById('collections-modal').classList.contains('hidden')) closeCollections();
                 if (!document.getElementById('about-modal').classList.contains('hidden')) closeAbout();
                 if (!document.getElementById('contact-modal').classList.contains('hidden')) closeContact();
+            }
+        });
+
+        // Protect Images: Disable Right-Click & Dragging on All Image Elements
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+            }
+        });
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
             }
         });
 
